@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie Recommender</title>
+</head>
+<body>
+    <h1>Movie Recommender</h1>
+    <input type="text" id="movieInput" placeholder="Enter movie title">
+    <button onclick="getRecommendations()">Get Recommendations</button>
+
+    <h2>Recommendations:</h2>
+    <ul id="recommendationsList"></ul>
+
+    <script>
+        async function getRecommendations() {
+            const movie = document.getElementById('movieInput').value;
+            const response = await fetch(`http://127.0.0.1:8000/recommend?movie=${encodeURIComponent(movie)}`);
+            const data = await response.json();
+
+            const list = document.getElementById('recommendationsList');
+            list.innerHTML = ''; // Clear old results
+
+            data.recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                list.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>

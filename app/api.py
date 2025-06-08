@@ -13,6 +13,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def read_root():
+    return {"message": "Movie Recommender API is running."}
+
+
 @app.get("/recommend")
 def get_recommendations(movie: str = Query(..., description="Movie title to recommend similar movies for")):
     recommendations = recommend(movie)

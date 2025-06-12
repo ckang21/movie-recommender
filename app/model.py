@@ -1,5 +1,6 @@
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
+from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from rapidfuzz import process
 
@@ -19,8 +20,9 @@ movies_df = pd.read_csv(
 )
 
 # 2️⃣ TF-IDF on movie titles
-tfidf = TfidfVectorizer(stop_words='english')
-tfidf_matrix = tfidf.fit_transform(movies_df['title'])
+model = SentenceTransformer('all-MiniLM-L6-v2')
+embeddings = model.encode(movies_df['title'].tolist(), convert_to_numpy=True)
+
 
 # 3️⃣ Genres → binary matrix
 genre_cols = ['Action', 'Adventure', 'Animation', 'Children', 'Comedy', 'Crime',
@@ -30,8 +32,7 @@ genre_cols = ['Action', 'Adventure', 'Animation', 'Children', 'Comedy', 'Crime',
 genre_matrix = movies_df[genre_cols].values
 
 # 4️⃣ Combine title TF-IDF and genres into one big matrix
-import numpy as np
-combined_matrix = np.hstack([tfidf_matrix.toarray(), genre_matrix])
+combined_matrix = np.hstack([embeddings, genre_matrix])
 
 # 5️⃣ Compute cosine similarity between all movies
 cosine_sim = cosine_similarity(combined_matrix, combined_matrix)
